@@ -2380,5 +2380,814 @@ export const api = {
       throw new Error('Network error. Please check your connection and try again.');
     }
   },
+
+  // Commission Settings APIs
+  async getCommissionSettings(
+    token: string
+  ): Promise<ApiResponse<{
+    _id: string;
+    coordinatorPercentage: number;
+    districtCoordinatorPercentage: number;
+    teamLeaderPercentage: number;
+    fieldEmployeePercentage: number;
+    updatedBy?: {
+      _id: string;
+      userId: string;
+      firstName: string;
+      lastName: string;
+    };
+    updatedByModel?: string;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+  }>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/commission-settings`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || data.error || 'Failed to fetch commission settings. Please try again.');
+      }
+
+      return data;
+    } catch (error: any) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Network error. Please check your connection and try again.');
+    }
+  },
+
+  async createCommissionSettings(
+    token: string,
+    coordinatorPercentage: number,
+    districtCoordinatorPercentage: number,
+    teamLeaderPercentage: number,
+    fieldEmployeePercentage: number
+  ): Promise<ApiResponse<{
+    _id: string;
+    coordinatorPercentage: number;
+    districtCoordinatorPercentage: number;
+    teamLeaderPercentage: number;
+    fieldEmployeePercentage: number;
+    updatedBy: string;
+    updatedByModel: string;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+  }>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/commission-settings`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          coordinatorPercentage,
+          districtCoordinatorPercentage,
+          teamLeaderPercentage,
+          fieldEmployeePercentage,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || data.error || 'Failed to create commission settings. Please try again.');
+      }
+
+      return data;
+    } catch (error: any) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Network error. Please check your connection and try again.');
+    }
+  },
+
+  async updateCommissionSettings(
+    token: string,
+    coordinatorPercentage?: number,
+    districtCoordinatorPercentage?: number,
+    teamLeaderPercentage?: number,
+    fieldEmployeePercentage?: number
+  ): Promise<ApiResponse<{
+    _id: string;
+    coordinatorPercentage: number;
+    districtCoordinatorPercentage: number;
+    teamLeaderPercentage: number;
+    fieldEmployeePercentage: number;
+    updatedBy: string;
+    updatedByModel: string;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+  }>> {
+    try {
+      const body: any = {};
+      if (coordinatorPercentage !== undefined) body.coordinatorPercentage = coordinatorPercentage;
+      if (districtCoordinatorPercentage !== undefined) body.districtCoordinatorPercentage = districtCoordinatorPercentage;
+      if (teamLeaderPercentage !== undefined) body.teamLeaderPercentage = teamLeaderPercentage;
+      if (fieldEmployeePercentage !== undefined) body.fieldEmployeePercentage = fieldEmployeePercentage;
+
+      const response = await fetch(`${API_BASE_URL}/commission-settings`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || data.error || 'Failed to update commission settings. Please try again.');
+      }
+
+      return data;
+    } catch (error: any) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Network error. Please check your connection and try again.');
+    }
+  },
+
+  // Dashboard API
+  async getDashboard(
+    token: string,
+    period?: number
+  ): Promise<ApiResponse<{
+    overview: {
+      totalUsers: number;
+      userBreakdown: {
+        students: number;
+        admins: number;
+        coordinators: number;
+        districtCoordinators: number;
+        teamLeaders: number;
+        fieldEmployees: number;
+      };
+      activeUsers: {
+        students: number;
+        total: number;
+      };
+      inactiveUsers: {
+        students: number;
+        total: number;
+        note: string;
+      };
+    };
+    revenue: {
+      period: {
+        subscriptions: number;
+        courses: number;
+        total: number;
+        transactions: number;
+        netRevenue: number;
+      };
+      allTime: {
+        subscriptions: number;
+        courses: number;
+        total: number;
+        netRevenue: number;
+      };
+    };
+    expenses: {
+      period: {
+        total: number;
+        transactions: number;
+      };
+      allTime: {
+        total: number;
+      };
+      note: string;
+    };
+    userCounts: {
+      students: number;
+      admins: number;
+      coordinators: number;
+      districtCoordinators: number;
+      teamLeaders: number;
+      fieldEmployees: number;
+    };
+    growthChart: {
+      period: string;
+      data: Array<{
+        date: string;
+        signUps: number;
+      }>;
+    };
+    salesChart: {
+      period: string;
+      topSubcategories: Array<{
+        subCategory: string;
+        subCategoryId: string;
+        totalSales: number;
+        transactions: number;
+      }>;
+      topCourses: Array<{
+        course: string;
+        courseId: string;
+        totalSales: number;
+        transactions: number;
+      }>;
+    };
+    recentActivity: {
+      subscriptions: Array<{
+        student: {
+          userId: string;
+          name: string;
+        };
+        plan: {
+          duration: string;
+          amount: number;
+        };
+        subCategory: string;
+        amount: number;
+        createdAt: string;
+      }>;
+      coursePurchases: Array<{
+        student: {
+          userId: string;
+          name: string;
+        };
+        course: {
+          title: string;
+          price: number;
+        };
+        amount: number;
+        createdAt: string;
+      }>;
+    };
+  }>> {
+    try {
+      const params = new URLSearchParams();
+      if (period !== undefined) params.append('period', period.toString());
+      const queryString = params.toString();
+      const url = `${API_BASE_URL}/dashboard${queryString ? `?${queryString}` : ''}`;
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || data.error || 'Failed to fetch dashboard data. Please try again.');
+      }
+
+      return data;
+    } catch (error: any) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Network error. Please check your connection and try again.');
+    }
+  },
+
+  // Health Check API
+  async getHealthCheck(
+    token: string
+  ): Promise<{
+    success: boolean;
+    message: string;
+    timestamp: string;
+    health: {
+      status: 'healthy' | 'warning' | 'unhealthy';
+      message: string;
+      issues: string[];
+    };
+    server: {
+      status: string;
+      platform: string;
+      arch: string;
+      hostname: string;
+      nodeVersion: string;
+      uptime: number;
+      uptimeFormatted: string;
+    };
+    database: {
+      connected: boolean;
+      state: string;
+      responseTime: number;
+      error: string | null;
+      stats?: {
+        collections: number;
+        dataSize: string;
+        storageSize: string;
+        indexes: number;
+        indexSize: string;
+        objects: number;
+      };
+    };
+    memory: {
+      process: {
+        rss: string;
+        heapTotal: string;
+        heapUsed: string;
+        external: string;
+        arrayBuffers: string;
+      };
+      system: {
+        total: string;
+        free: string;
+        used: string;
+        usagePercent: string;
+      };
+    };
+    cpu: {
+      cores: number;
+      model: string;
+      loadAverage: number[];
+    };
+    performance: {
+      apiResponseTime: string;
+      databaseResponseTime: string;
+    };
+  }> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/health`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || data.error || 'Failed to fetch health check. Please try again.');
+      }
+
+      return data;
+    } catch (error: any) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Network error. Please check your connection and try again.');
+    }
+  },
+
+  // Thumbnail Management APIs
+  async createThumbnail(
+    token: string,
+    title: string,
+    image: File,
+    description?: string,
+    order?: number
+  ): Promise<ApiResponse<{
+    _id: string;
+    title: string;
+    image: string;
+    description?: string;
+    order: number;
+    isActive: boolean;
+    createdBy: string;
+    createdAt: string;
+    updatedAt: string;
+  }>> {
+    try {
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('image', image);
+      if (description) formData.append('description', description);
+      if (order !== undefined) formData.append('order', order.toString());
+
+      const response = await fetch(`${API_BASE_URL}/thumbnails`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || data.error || 'Failed to create thumbnail. Please try again.');
+      }
+
+      return data;
+    } catch (error: any) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Network error. Please check your connection and try again.');
+    }
+  },
+
+  async getAllThumbnails(
+    token: string,
+    page?: number,
+    limit?: number,
+    isActive?: boolean,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc'
+  ): Promise<ApiResponse<{
+    thumbnails: Array<{
+      _id: string;
+      title: string;
+      image: string;
+      description?: string;
+      order: number;
+      isActive: boolean;
+      createdBy?: {
+        _id: string;
+        userId: string;
+        firstName: string;
+        lastName: string;
+      };
+      createdAt: string;
+    }>;
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      pages: number;
+    };
+  }>> {
+    try {
+      const params = new URLSearchParams();
+      if (page !== undefined) params.append('page', page.toString());
+      if (limit !== undefined) params.append('limit', limit.toString());
+      if (isActive !== undefined) params.append('isActive', isActive.toString());
+      if (sortBy) params.append('sortBy', sortBy);
+      if (sortOrder) params.append('sortOrder', sortOrder);
+      const queryString = params.toString();
+      const url = `${API_BASE_URL}/thumbnails${queryString ? `?${queryString}` : ''}`;
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || data.error || 'Failed to fetch thumbnails. Please try again.');
+      }
+
+      return data;
+    } catch (error: any) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Network error. Please check your connection and try again.');
+    }
+  },
+
+  async getThumbnailById(
+    token: string,
+    id: string
+  ): Promise<ApiResponse<{
+    _id: string;
+    title: string;
+    image: string;
+    description?: string;
+    order: number;
+    isActive: boolean;
+    createdBy?: {
+      _id: string;
+      userId: string;
+      firstName: string;
+      lastName: string;
+    };
+    createdAt: string;
+    updatedAt: string;
+  }>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/thumbnails/${id}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || data.error || 'Failed to fetch thumbnail. Please try again.');
+      }
+
+      return data;
+    } catch (error: any) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Network error. Please check your connection and try again.');
+    }
+  },
+
+  async updateThumbnail(
+    token: string,
+    id: string,
+    title?: string,
+    image?: File,
+    description?: string,
+    order?: number,
+    isActive?: boolean
+  ): Promise<ApiResponse<{
+    _id: string;
+    title: string;
+    image: string;
+    description?: string;
+    order: number;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+  }>> {
+    try {
+      const formData = new FormData();
+      if (title) formData.append('title', title);
+      if (image) formData.append('image', image);
+      if (description !== undefined) formData.append('description', description);
+      if (order !== undefined) formData.append('order', order.toString());
+      if (isActive !== undefined) formData.append('isActive', isActive.toString());
+
+      const response = await fetch(`${API_BASE_URL}/thumbnails/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || data.error || 'Failed to update thumbnail. Please try again.');
+      }
+
+      return data;
+    } catch (error: any) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Network error. Please check your connection and try again.');
+    }
+  },
+
+  async deleteThumbnail(
+    token: string,
+    id: string
+  ): Promise<{ success: boolean; message: string }> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/thumbnails/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || data.error || 'Failed to delete thumbnail. Please try again.');
+      }
+
+      return data;
+    } catch (error: any) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Network error. Please check your connection and try again.');
+    }
+  },
+
+  // Analytics API
+  async getAnalytics(
+    token: string,
+    period?: 'all' | 'today' | 'week' | 'month' | 'year',
+    startDate?: string,
+    endDate?: string
+  ): Promise<ApiResponse<{
+    period: string;
+    dateRange: {
+      createdAt: {
+        $gte: string;
+        $lte: string;
+      };
+    };
+    data: {
+      trialBalance: {
+        debits: {
+          expenses: number;
+          walletBalances: number;
+          total: number;
+        };
+        credits: {
+          revenue: number;
+          total: number;
+        };
+        balance: number;
+      };
+      incomeStatement: {
+        revenue: {
+          subscriptions: number;
+          courses: number;
+          total: number;
+        };
+        expenses: {
+          commissions: number;
+          total: number;
+        };
+        netIncome: number;
+        grossProfit: number;
+        operatingExpenses: number;
+      };
+      balanceSheet: {
+        assets: {
+          cash: number;
+          accountsReceivable: number;
+          total: number;
+        };
+        liabilities: {
+          accountsPayable: number;
+          commissionsPayable: number;
+          total: number;
+        };
+        equity: {
+          retainedEarnings: number;
+          total: number;
+        };
+        total: number;
+      };
+      revenue: {
+        subscriptions: {
+          total: number;
+          count: number;
+        };
+        courses: {
+          total: number;
+          count: number;
+        };
+        total: number;
+        totalTransactions: number;
+      };
+      expenses: {
+        total: number;
+        count: number;
+        byRole: {
+          Coordinator: number;
+          DistrictCoordinator: number;
+          TeamLeader: number;
+          FieldEmployee: number;
+        };
+      };
+      commissionDistribution: {
+        byRole: {
+          Coordinator: {
+            totalCommissions: number;
+            transactions: number;
+            uniqueUsers: number;
+          };
+          DistrictCoordinator: {
+            totalCommissions: number;
+            transactions: number;
+            uniqueUsers: number;
+          };
+          TeamLeader: {
+            totalCommissions: number;
+            transactions: number;
+            uniqueUsers: number;
+          };
+          FieldEmployee: {
+            totalCommissions: number;
+            transactions: number;
+            uniqueUsers: number;
+          };
+        };
+        total: number;
+      };
+      walletBalances: {
+        coordinators: {
+          totalBalance: number;
+          totalEarned: number;
+          totalWithdrawn: number;
+          count: number;
+        };
+        districtCoordinators: {
+          totalBalance: number;
+          totalEarned: number;
+          totalWithdrawn: number;
+          count: number;
+        };
+        teamLeaders: {
+          totalBalance: number;
+          totalEarned: number;
+          totalWithdrawn: number;
+          count: number;
+        };
+        fieldEmployees: {
+          totalBalance: number;
+          totalEarned: number;
+          totalWithdrawn: number;
+          count: number;
+        };
+        total: {
+          balance: number;
+          earned: number;
+          withdrawn: number;
+        };
+      };
+      moneyDistribution: {
+        byRole: {
+          Coordinator: Array<{
+            month: string;
+            amount: number;
+            transactions: number;
+          }>;
+          DistrictCoordinator: Array<{
+            month: string;
+            amount: number;
+            transactions: number;
+          }>;
+          TeamLeader?: Array<{
+            month: string;
+            amount: number;
+            transactions: number;
+          }>;
+          FieldEmployee?: Array<{
+            month: string;
+            amount: number;
+            transactions: number;
+          }>;
+        };
+        summary: {
+          Coordinator: number;
+          DistrictCoordinator: number;
+          TeamLeader: number;
+          FieldEmployee: number;
+        };
+      };
+      transactionSummary: {
+        walletTransactions: {
+          COMMISSION?: {
+            total: number;
+            count: number;
+          };
+          WITHDRAWAL?: {
+            total: number;
+            count: number;
+          };
+        };
+        subscriptions: {
+          COMPLETED?: {
+            total: number;
+            count: number;
+          };
+        };
+        coursePurchases: {
+          COMPLETED?: {
+            total: number;
+            count: number;
+          };
+        };
+      };
+    };
+  }>> {
+    try {
+      const params = new URLSearchParams();
+      if (period) params.append('period', period);
+      if (startDate) params.append('startDate', startDate);
+      if (endDate) params.append('endDate', endDate);
+      const queryString = params.toString();
+      const url = `${API_BASE_URL}/analytics${queryString ? `?${queryString}` : ''}`;
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || data.error || 'Failed to fetch analytics. Please try again.');
+      }
+
+      return data;
+    } catch (error: any) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Network error. Please check your connection and try again.');
+    }
+  },
 };
 

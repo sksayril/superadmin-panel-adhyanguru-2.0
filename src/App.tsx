@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { ToastProvider } from './components/ToastContainer';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -13,14 +14,18 @@ import Subjects from './pages/Subjects';
 import Chapters from './pages/Chapters';
 import PublicCourses from './pages/PublicCourses';
 import CourseChapters from './pages/CourseChapters';
+import CommissionSettings from './pages/CommissionSettings';
+import Thumbnails from './pages/Thumbnails';
+import Settings from './pages/Settings';
+import Analytics from './pages/Analytics';
 import { SkeletonStatCard, SkeletonCard } from './components/Skeleton';
 
 function AppContent() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [showSignup, setShowSignup] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const { isAuthenticated, isLoading } = useAuth();
+  const { colors } = useTheme();
 
   // Get active tab from route
   const getActiveTab = () => {
@@ -36,6 +41,8 @@ function AppContent() {
   const setActiveTab = (tab: string) => {
     if (tab === 'dashboard') {
       navigate('/dashboard');
+    } else if (tab === 'thumbnails') {
+      navigate('/thumbnails');
     } else if (tab === 'subjects') {
       navigate('/subjects');
     } else if (tab === 'users') {
@@ -46,6 +53,12 @@ function AppContent() {
       navigate('/board');
     } else if (tab === 'courses') {
       navigate('/courses');
+    } else if (tab === 'commission-settings') {
+      navigate('/commission-settings');
+    } else if (tab === 'settings') {
+      navigate('/settings');
+    } else if (tab === 'analytics') {
+      navigate('/analytics');
     } else {
       navigate(`/${tab}`);
     }
@@ -60,6 +73,13 @@ function AppContent() {
       }
     }
   }, []);
+
+  // Redirect authenticated users away from login/signup pages
+  useEffect(() => {
+    if (isAuthenticated && (location.pathname === '/login' || location.pathname === '/signup')) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, location.pathname, navigate]);
 
   if (isLoading) {
     return (
@@ -102,21 +122,51 @@ function AppContent() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div
+      className="flex min-h-screen transition-colors duration-300"
+      style={{ backgroundColor: colors.background }}
+    >
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isExpanded={isExpanded} setIsExpanded={setIsExpanded} />
       <div className={`transition-all duration-300 ease-in-out flex-1 ${isExpanded ? 'ml-64' : 'ml-20'}`}>
-        <div className="bg-white shadow-sm border-b border-gray-200 px-8 py-4">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-sky-600 to-blue-600 bg-clip-text text-transparent">
+        <div
+          className="shadow-sm border-b px-8 py-4 transition-colors duration-300"
+          style={{
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+          }}
+        >
+            <h2
+              className="text-2xl font-bold bg-clip-text text-transparent"
+              style={{
+                background: `linear-gradient(to right, ${colors.primary}, ${colors.secondary})`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
             {location.pathname.startsWith('/chapters/') 
               ? 'Chapters' 
               : location.pathname.startsWith('/course-chapters/')
               ? 'Course Chapters'
+              : activeTab === 'commission-settings'
+              ? 'Commission Settings'
+              : activeTab === 'thumbnails'
+              ? 'Thumbnails'
+              : activeTab === 'settings'
+              ? 'Settings'
+              : activeTab === 'analytics'
+              ? 'Analytics'
               : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
           </h2>
         </div>
-        <div className="min-h-[calc(100vh-73px)] bg-gradient-to-br from-gray-50 to-sky-50">
+        <div
+          className="min-h-[calc(100vh-73px)] transition-colors duration-300"
+          style={{
+            background: `linear-gradient(to bottom right, ${colors.background}, ${colors.background}dd)`,
+          }}
+        >
           <Routes>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/thumbnails" element={<Thumbnails />} />
             <Route path="/users" element={<Users />} />
             <Route path="/categories" element={<Categories />} />
             <Route path="/subjects" element={<Subjects />} />
@@ -124,6 +174,9 @@ function AppContent() {
             <Route path="/board" element={<Board />} />
             <Route path="/courses" element={<PublicCourses />} />
             <Route path="/course-chapters/:courseId" element={<CourseChapters />} />
+            <Route path="/commission-settings" element={<CommissionSettings />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/analytics" element={<Analytics />} />
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route
               path="*"
@@ -148,11 +201,13 @@ function AppContent() {
 function App() {
   return (
     <BrowserRouter>
-      <ToastProvider>
-        <AuthProvider>
-          <AppContent />
-        </AuthProvider>
-      </ToastProvider>
+      <ThemeProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <AppContent />
+          </AuthProvider>
+        </ToastProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/ToastContainer';
 import { UserPlus } from 'lucide-react';
@@ -17,8 +18,16 @@ export default function Signup({ onSwitchToLogin }: SignupProps) {
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signup } = useAuth();
+  const { signup, isAuthenticated } = useAuth();
   const { showToast } = useToast();
+  const navigate = useNavigate();
+
+  // Redirect to dashboard if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -75,6 +84,8 @@ export default function Signup({ onSwitchToLogin }: SignupProps) {
       );
       if (success) {
         showToast('Account created successfully! Welcome to the Adhyan Guru Super Admin Panel.', 'success');
+        // Redirect to dashboard after successful signup (user is automatically logged in)
+        navigate('/dashboard', { replace: true });
       } else {
         const errorMessage = 'Failed to create account. Please check your information and try again.';
         setError(errorMessage);

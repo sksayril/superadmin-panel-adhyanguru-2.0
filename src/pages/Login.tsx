@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/ToastContainer';
 import { LogIn } from 'lucide-react';
@@ -12,8 +13,16 @@ export default function Login({ onSwitchToSignup }: LoginProps) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const { showToast } = useToast();
+  const navigate = useNavigate();
+
+  // Redirect to dashboard if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +33,8 @@ export default function Login({ onSwitchToSignup }: LoginProps) {
       const success = await login(identifier, password);
       if (success) {
         showToast('Login successful! Welcome back.', 'success');
+        // Redirect to dashboard after successful login
+        navigate('/dashboard', { replace: true });
       } else {
         const errorMessage = 'Invalid credentials. Please check your email, mobile number, or user ID and password.';
         setError(errorMessage);
