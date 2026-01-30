@@ -1,5 +1,5 @@
-// const API_BASE_URL = 'http://localhost:3023/api/super-admin';
-const API_BASE_URL = 'https://api.adhyan.guru/api/super-admin';
+const API_BASE_URL = 'http://localhost:3023/api/super-admin';
+// const API_BASE_URL = 'https://api.adhyan.guru/api/super-admin';
 
 interface ApiResponse<T> {
   success: boolean;
@@ -2177,8 +2177,12 @@ export const api = {
       formData.append('order', order.toString());
       if (description) formData.append('description', description);
       if (text) formData.append('text', text);
-      if (pdf) formData.append('pdf', pdf);
-      if (video) formData.append('video', video);
+      if (pdf && pdf.size > 0 && pdf.name) {
+        formData.append('pdf', pdf, pdf.name);
+      }
+      if (video && video.size > 0 && video.name) {
+        formData.append('video', video, video.name);
+      }
 
       const response = await fetch(`${API_BASE_URL}/course-chapter`, {
         method: 'POST',
@@ -2328,8 +2332,12 @@ export const api = {
       if (order !== undefined) formData.append('order', order.toString());
       if (text !== undefined) formData.append('text', text);
       if (isActive !== undefined) formData.append('isActive', isActive.toString());
-      if (pdf) formData.append('pdf', pdf);
-      if (video) formData.append('video', video);
+      if (pdf && pdf.size > 0 && pdf.name) {
+        formData.append('pdf', pdf, pdf.name);
+      }
+      if (video && video.size > 0 && video.name) {
+        formData.append('video', video, video.name);
+      }
 
       const response = await fetch(`${API_BASE_URL}/course-chapter/${id}`, {
         method: 'PUT',

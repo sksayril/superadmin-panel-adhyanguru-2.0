@@ -115,8 +115,8 @@ export default function CourseChapters() {
         chapterForm.order,
         chapterForm.description || undefined,
         chapterForm.textContent || undefined,
-        chapterForm.pdf || undefined,
-        chapterForm.video || undefined
+        (chapterForm.pdf && chapterForm.pdf.size > 0 && chapterForm.pdf.name) ? chapterForm.pdf : undefined,
+        (chapterForm.video && chapterForm.video.size > 0 && chapterForm.video.name) ? chapterForm.video : undefined
       );
       if (response.success) {
         showToast('Course chapter created successfully!', 'success');
@@ -144,8 +144,8 @@ export default function CourseChapters() {
         chapterForm.order !== undefined ? chapterForm.order : undefined,
         chapterForm.textContent !== undefined ? chapterForm.textContent : undefined,
         chapterForm.isActive,
-        chapterForm.pdf || undefined,
-        chapterForm.video || undefined
+        (chapterForm.pdf && chapterForm.pdf.size > 0 && chapterForm.pdf.name) ? chapterForm.pdf : undefined,
+        (chapterForm.video && chapterForm.video.size > 0 && chapterForm.video.name) ? chapterForm.video : undefined
       );
       if (response.success) {
         showToast('Course chapter updated successfully!', 'success');
